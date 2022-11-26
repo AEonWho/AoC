@@ -48,7 +48,7 @@ public class Packet
     public long GetValue()
     {
         if (_value.HasValue)
-            Console.WriteLine(_value);
+            return _value.Value;
 
         switch (Type)
         {
