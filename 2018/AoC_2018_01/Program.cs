@@ -17,4 +17,4 @@ while (!Frequencies.Contains(value))
         i = 0;
 }
 
-Console.WriteLine("Stage1: " + value);
+Console.WriteLine("Stage2: " + value);

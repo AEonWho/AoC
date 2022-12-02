@@ -18,7 +18,7 @@ foreach (var game in games)
     score += GetGameScore(game);
 }
 
-Console.WriteLine(score);
+Console.WriteLine("Stage1: " + score);
 
 score = 0;
 foreach (var game in games)
@@ -47,7 +47,7 @@ foreach (var game in games)
     score += GetGameScore((game.Item1, play));
 }
 
-Console.WriteLine(score);
+Console.WriteLine("Stage2: "+score);
 
 int GetGameScore((string, string) game)
 {
