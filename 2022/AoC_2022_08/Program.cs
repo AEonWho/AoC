@@ -1,6 +1,4 @@
-﻿using static System.Formats.Asn1.AsnWriter;
-
-var lines = File.ReadAllLines("Input.txt").ToList();
+﻿var lines = File.ReadAllLines("Input.txt").ToList();
 
 var maxX = lines[0].Length;
 var maxY = lines.Count;
@@ -11,7 +9,6 @@ for (int y = 0; y < lines.Count; y++)
 {
     for (int x = 0; x < lines[y].Length; x++)
     {
-
         var val = int.Parse(lines[y][x].ToString());
 
         Map.Add((x, y), val);
