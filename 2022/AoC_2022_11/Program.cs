@@ -29,7 +29,7 @@ while (true)
     {
         foreach (var data in monkey.ThrowItems())
         {
-            monkeys[data.monkeyId].Items.Add(data.item);
+            monkeys[data.MonkeyId].Items.Add(data.Item);
         }
     }
 
@@ -53,7 +53,7 @@ while (true)
     {
         foreach (var data in monkey.ThrowItems())
         {
-            monkeys[data.monkeyId].Items.Add(data.item);
+            monkeys[data.MonkeyId].Items.Add(data.Item);
         }
     }
 
@@ -100,6 +100,7 @@ internal class Monkey
     public string Operation { get; }
 
     public long? Value1 { get; }
+
     public long? Value2 { get; }
 
     public long CheckCondition { get; }
@@ -117,7 +118,7 @@ internal class Monkey
         Items = _initItems;
     }
 
-    public IEnumerable<(int monkeyId, long item)> ThrowItems()
+    public IEnumerable<(int MonkeyId, long Item)> ThrowItems()
     {
         foreach (var item in Items)
         {
