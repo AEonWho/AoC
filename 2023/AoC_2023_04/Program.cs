@@ -1,7 +1,7 @@
 ﻿var input = File.ReadAllLines("Input.txt");
 
 List<int> level1Points = new List<int>();
-Dictionary<int, int> level2winningCountDict = new();
+List<Level2Class> level2DataHelper = new();
 for (int i = 0; i < input.Length; i++)
 {
     var line = input[i];
@@ -16,26 +16,29 @@ for (int i = 0; i < input.Length; i++)
         level1Points.Add((int)Math.Pow(2, scoredNumbers.Count - 1));
     }
 
-    level2winningCountDict.Add(i, scoredNumbers.Count);
+    level2DataHelper.Add(new Level2Class { Id = i, Winnings = scoredNumbers.Count });
 }
 
 Console.WriteLine("Level1: " + level1Points.Sum());
 
-int cnt = 0;
-Queue<int> queue = new Queue<int>(Enumerable.Range(0, input.Length));
-while (queue.TryDequeue(out var idx))
+foreach (var k in level2DataHelper)
 {
-    if (level2winningCountDict.TryGetValue(idx, out var winningCount))
+    for (int i = 1; i <= k.Winnings; i++)
     {
-        cnt++;
-
-        for (int i = 1; i <= winningCount; i++)
+        var nextId = k.Id + i;
+        if (nextId < level2DataHelper.Count)
         {
-            queue.Enqueue(idx + i);
+            level2DataHelper[nextId].Count += k.Count;
         }
     }
 }
 
-Console.WriteLine("Level2: " + cnt);
-
+Console.WriteLine("Level2: " + level2DataHelper.Sum(d => d.Count));
 Console.ReadLine();
+
+public class Level2Class
+{
+    public int Id { get; init; }
+    public int Winnings { get; init; }
+    public int Count { get; set; } = 1;
+}
