@@ -135,10 +135,12 @@ for (int y = 0; y < input.Length; y++)
 
     for (int x = 0; x < line.Length; x++)
     {
-        var color = Console.ForegroundColor;
         if (loop.Contains((x, y)))
         {
             Console.ForegroundColor = ConsoleColor.Green;
+            if((x,y) == startPoint)
+                Console.ForegroundColor = ConsoleColor.Red;
+            
             switch (line[x])
             {
                 case 'F':
@@ -159,6 +161,9 @@ for (int y = 0; y < input.Length; y++)
                 case '|':
                     Console.Write("│");
                     break;
+                case 'S':
+                    Console.Write("S");
+                    break;
             }
         }
         else
@@ -168,7 +173,7 @@ for (int y = 0; y < input.Length; y++)
             Console.Write("#");
         }
 
-        Console.ForegroundColor = color;
+        Console.ForegroundColor = ConsoleColor.Gray;
     }
     Console.WriteLine();
 }
