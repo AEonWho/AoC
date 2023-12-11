@@ -2,7 +2,7 @@
 
 namespace AoC_Common.PathFinding
 {
-    public class PathResult : List<MapCoordinate>
+    public class PathResult
     {
         public IReadOnlyDictionary<MapCoordinate, MapPoint> Map { get; }
 

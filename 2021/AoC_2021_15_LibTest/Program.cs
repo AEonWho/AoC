@@ -22,7 +22,7 @@ var lines = File.ReadAllLines("Input.txt");
 
     PathResult result = AoC_PathFinding.FindPath_Directed(start, end, costFunction: d => d == start ? 0 : map[d], validateCoordinate: map.ContainsKey);
 
-    PrintMap(result);
+    //PrintMap(result);
     Console.WriteLine("Level1: " + result.Cost!);
 }
 
