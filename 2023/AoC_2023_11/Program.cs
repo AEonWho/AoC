@@ -1,57 +1,49 @@
-﻿using System.Collections.Generic;
+﻿var input = File.ReadAllLines("Input.txt");
 
-var input = File.ReadAllLines("Input.txt");
+List<(long X, long Y)> GalaxiesLevel1 = ObserveGalaxies(input, 2).ToList();
+List<(long X, long Y)> GalaxiesLevel2 = ObserveGalaxies(input, 1_000_000).ToList();
 
-var GalaxiesLevel1 = new List<(long X, long Y)>();
-var GalaxiesLevel2 = new List<(long X, long Y)>();
+Console.WriteLine("Level1: " + GetResult(GalaxiesLevel1));
+Console.WriteLine("Level2: " + GetResult(GalaxiesLevel2));
 
-var offsetYLevel1 = 0;
-var offsetYLevel2 = 0;
-
-for (int y = 0; y < input.Length; y++)
+static IEnumerable<(long X, long Y)> ObserveGalaxies(string[] input, int voidLength)
 {
-    var line = input[y];
+    var voidY = Enumerable.Range(0, input.Length).Where(d => input[d].All(c => c == '.')).ToList();
+    var voidX = Enumerable.Range(0, input[0].Length).Where(d => input.Select(c => c[d]).All(c => c == '.')).ToList();
 
-    if (line.All(d => d == '.'))
+    var offsetY = 0;
+    for (int y = 0; y < input.Length; y++)
     {
-        offsetYLevel1++;
-        offsetYLevel2 += 999999;
-    }
+        var line = input[y];
 
-    var offsetXLevel1 = 0;
-    var offsetXLevel2 = 0;
-    for (int x = 0; x < line.Length; x++)
-    {
-        if (input.Select(d => d[x]).All(d => d == '.'))
-        {
-            offsetXLevel1++;
-            offsetXLevel2 += 999999;
-        }
+        if (voidY.Contains(y))
+            offsetY += voidLength - 1;
 
-        if (line[x] == '#')
+        var offsetX = 0;
+        for (int x = 0; x < line.Length; x++)
         {
-            GalaxiesLevel1.Add((x + offsetXLevel1, y + offsetYLevel1));
-            GalaxiesLevel2.Add((x + offsetXLevel2, y + offsetYLevel2));
+            if (voidX.Contains(x))
+                offsetX += voidLength-1;
+
+            if (line[x] == '#')
+                yield return (x + offsetX, y + offsetY);
         }
     }
 }
 
-long Level1Res = 0;
-long Level2Res = 0;
-for (int i = 0; i < GalaxiesLevel1.Count - 1; i++)
+static long GetResult(List<(long X, long Y)> galaxies)
 {
-    for (int i2 = i + 1; i2 < GalaxiesLevel1.Count; i2++)
+    long result = 0;
+    for (int i = 0; i < galaxies.Count - 1; i++)
     {
-        var distanceXLevel1 = Math.Abs(GalaxiesLevel1[i].X - GalaxiesLevel1[i2].X);
-        var distanceYLevel1 = Math.Abs(GalaxiesLevel1[i].Y - GalaxiesLevel1[i2].Y);
+        for (int i2 = i + 1; i2 < galaxies.Count; i2++)
+        {
+            var distanceX = Math.Abs(galaxies[i].X - galaxies[i2].X);
+            var distanceY = Math.Abs(galaxies[i].Y - galaxies[i2].Y);
 
-        var distanceXLevel2 = Math.Abs(GalaxiesLevel2[i].X - GalaxiesLevel2[i2].X);
-        var distanceYLevel2 = Math.Abs(GalaxiesLevel2[i].Y - GalaxiesLevel2[i2].Y);
-
-        Level1Res += distanceXLevel1 + distanceYLevel1;
-        Level2Res += distanceXLevel2 + distanceYLevel2;
+            result += distanceX + distanceY;
+        }
     }
-}
 
-Console.WriteLine("Level1: " + Level1Res);
-Console.WriteLine("Level1: " + Level2Res);
+    return result;
+}
