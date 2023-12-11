@@ -1,67 +1,114 @@
-﻿namespace AoC_Common
+﻿using System.Collections.Concurrent;
+
+namespace AoC_Common
 {
     public class AoC_Math
     {
         public static ulong GetSmallestCommonMultiple(params long[] numbers)
         {
-            if (numbers.Contains(0))
-                return 0;
+            if (numbers.Any(d => d < 0))
+                throw new NotSupportedException("Numbers smaller 0 not supported");
 
-            ulong[][] lists = (from x in numbers
-                               where x != 1 // 1 hat keine Auswirkungen
-                               select GetPrimeFactors((ulong)(x < 0 ? x * -1 : x))).ToArray();//Alle Primfaktoren ermitteln
-            Dictionary<ulong, uint> list = new Dictionary<ulong, uint>();
-
-            foreach (ulong[] l in lists)//Alle Primfaktoren-Listen durchgehen
-            {
-                uint n = 1;
-                ulong cur = 0;
-                if (l.Length == 0)
-                    continue;// Zahl ist eine 1
-                foreach (ulong i in l)//Alle Primfaktoren durchgehen
-                {
-                    if (cur == i)
-                        ++n;
-                    else
-                    {
-                        if (cur != 0)
-                        {
-                            if (list.ContainsKey(cur))//Enthält die Liste bereits die Zahl?
-                            {
-                                if (list[cur] <= n)//Zahl bereits enthalten und bisherige Anzahl kleiner als die aktuelle
-                                    list[cur] = n;//Neue Zuweisung der Anzahl.
-                            }
-                            else
-                            {
-                                list.Add(cur, n);//Neue Zahl zur Liste hinzufügen.
-                            }
-                        }
-                        n = 1;
-                        cur = i;
-                    }
-                }
-                if (list.ContainsKey(cur))//Enthält die Liste bereits die Zahl?
-                {
-                    if (list[cur] <= n)//Zahl bereits enthalten und bisherige Anzahl kleiner als die aktuelle
-                        list[cur] = n;//Neue Zuweisung der Anzahl.
-                }
-                else
-                {
-                    list.Add(cur, n);//Neue Zahl zur Liste hinzufügen.
-                }
-            }
-            ulong result = 1;
-            foreach (KeyValuePair<ulong, uint> l in list)//Alle Werte durchgehen
-                result *= Pow(l.Key, l.Value);//Potenzieren und multiplizieren der Werte
-            return result;//Wert zurück geben
+            return Internal_GetSmallestCommonMultiple(numbers.Select(d => (ulong)d).ToArray());
         }
 
-        /// <summary>
-        /// Potenziert einen Wert mit dem angegebenen Exponenten.
-        /// </summary>
-        /// <param name="b">Die Basis.</param>
-        /// <param name="e">Der Exponent.</param>
-        /// <returns>Die Potenz der Basis <c>b</c> und dem Exponenten <c>e</c>.</returns>
+        public static ulong GetSmallestCommonMultiple(params uint[] numbers)
+        {
+            return Internal_GetSmallestCommonMultiple(numbers.Select(d => (ulong)d).ToArray());
+        }
+
+        public static ulong GetSmallestCommonMultiple(params int[] numbers)
+        {
+            if (numbers.Any(d => d < 0))
+                throw new NotSupportedException("Numbers smaller 0 not supported");
+
+            return Internal_GetSmallestCommonMultiple(numbers.Select(d => (ulong)d).ToArray());
+        }
+
+        public static ulong GetSmallestCommonMultiple(params ulong[] numbers)
+        {
+            if (numbers.Contains(ulong.MinValue))
+                throw new NotSupportedException("0 not supported");
+
+            return Internal_GetSmallestCommonMultiple(numbers);
+        }
+
+        private static ulong Internal_GetSmallestCommonMultiple(params ulong[] numbers)
+        {
+            if (numbers.Contains(ulong.MinValue))
+                throw new NotSupportedException("0 not supported");
+
+            ConcurrentDictionary<ulong, uint> dict = new ConcurrentDictionary<ulong, uint>();
+            foreach (ulong l in numbers.Where(x => x != 1))
+            {
+                var primeFactors = GetPrimeFactors(l).GroupBy(x => x).ToDictionary(d => d.Key, d => (uint)d.Count());
+
+                foreach (var prime in primeFactors)
+                {
+                    dict.AddOrUpdate(prime.Key, prime.Value, (_, count) => Math.Max(count, prime.Value));
+                }
+            }
+
+            return dict.Select(d => Pow(d.Key, d.Value)).Aggregate((f, s) => f * s);
+        }
+
+
+        public static long GetGreatestCommonDivisor(params long[] numbers)
+        {
+            if (numbers.Any(d => d < 0))
+                throw new NotSupportedException("Numbers smaller 0 not supported");
+
+            return (long)InternalGetGreatestCommonDivisor(numbers.Select(d => (ulong)d).ToArray());
+        }
+
+        public static uint GetGreatestCommonDivisor(params uint[] numbers)
+        {
+            return (uint)InternalGetGreatestCommonDivisor(numbers.Select(d => (ulong)d).ToArray());
+        }
+
+        public static int GetGreatestCommonDivisor(params int[] numbers)
+        {
+            if (numbers.Any(d => d < 0))
+                throw new NotSupportedException("Numbers smaller 0 not supported");
+
+            return (int)InternalGetGreatestCommonDivisor(numbers.Select(d => (ulong)d).ToArray());
+        }
+
+        public static ulong GetGreatestCommonDivisor(params ulong[] numbers)
+        {
+            if (numbers.Any(d => d < 0))
+                throw new NotSupportedException("Numbers smaller 0 not supported");
+
+            return InternalGetGreatestCommonDivisor(numbers);
+        }
+
+        public static ulong InternalGetGreatestCommonDivisor(params ulong[] numbers)
+        {
+            if (numbers.Contains(ulong.MinValue))
+                throw new NotSupportedException("0 not supported");
+
+            if (numbers.Any(c => c == 1))
+                return 1;
+
+            Dictionary<ulong, uint>? dict = null;
+            foreach (ulong l in numbers)
+            {
+                var primeFactors = GetPrimeFactors(l).GroupBy(x => x).ToDictionary(d => d.Key, d => (uint)d.Count());
+
+                if (dict == null)
+                    dict = primeFactors;
+                else
+                    dict = primeFactors.Keys.Intersect(dict.Keys).ToDictionary(d => d, d => Math.Min(primeFactors[d], dict[d]));
+
+                if (!dict.Any())
+                {
+                    return 1;
+                }
+            }
+
+            return dict.Select(d => Pow(d.Key, d.Value)).Aggregate((f, s) => f * s);
+        }
+
         public static ulong Pow(ulong b, uint e)
         {
             ulong result = 1;
@@ -70,36 +117,29 @@
             return result;
         }
 
-        /// <summary>
-        /// Gibt die Primfaktoren einer Zahl zurück.
-        /// </summary>
-        /// <param name="x">Die Zahl, die in ihre Primfaktoren zerlegt werden soll.</param>
-        /// <returns>Die Primfaktoren der Zahl</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Wird ausgelöst, wenn x kleiner gleich 1 ist.</exception>
         public static ulong[] GetPrimeFactors(ulong x)
         {
             if (x <= 1)
                 throw new ArgumentOutOfRangeException("x", "x >= 2");
+
             List<ulong> list = new List<ulong>();
 
-            //? 2 entfernen/auflisten
-            while ((double)x / (double)2 == (ulong)((double)x / (double)2))//2 entfernen
+            while (x % 2 == 0)
             {
                 list.Add(2);
                 x /= 2;
             }
 
-            //? Ungerade Zahlen auf Primzahlen prüfen und ggf. entfernen/auflisten
             for (ulong i = 3; i <= x && x != 1;)
             {
-                if ((double)x / (double)i == (ulong)((double)x / (double)i)) // ist Zahl durch i Teilbar?
+                if (x % i == 0)
                 {
-                    list.Add(i); // Zur Liste hinzufügen
-                    x /= i; // Faktor von Zahl entfernen
+                    list.Add(i);
+                    x /= i;
                 }
                 else
                 {
-                    i += 2; // Nächste ungerade Zahl
+                    i += 2;
                 }
             }
             return list.ToArray(); // Als Array zurück geben
