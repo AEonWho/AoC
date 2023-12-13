@@ -11,6 +11,8 @@ namespace AoC_Tests
 
             var result = start.GetCombinations().ToList();
 
+            Assert.Equal(6, result.Count);
+
             Assert.Equal(1, result[0][0]);
             Assert.Equal(2, result[0][1]);
             Assert.Equal(3, result[0][2]);
@@ -34,6 +36,28 @@ namespace AoC_Tests
             Assert.Equal(3, result[5][0]);
             Assert.Equal(2, result[5][1]);
             Assert.Equal(1, result[5][2]);
+        }
+
+        [Fact]
+        public void Combinations_Sub2()
+        {
+            List<int> start = [1, 2, 1];
+
+            var result = start.GetCombinations().ToList();
+
+            Assert.Equal(3, result.Count);
+
+            Assert.Equal(1, result[0][0]);
+            Assert.Equal(2, result[0][1]);
+            Assert.Equal(1, result[0][2]);
+
+            Assert.Equal(1, result[1][0]);
+            Assert.Equal(1, result[1][1]);
+            Assert.Equal(2, result[1][2]);
+
+            Assert.Equal(2, result[2][0]);
+            Assert.Equal(1, result[2][1]);
+            Assert.Equal(1, result[2][2]);
         }
     }
 }

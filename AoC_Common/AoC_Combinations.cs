@@ -4,9 +4,19 @@
     {
         public static IEnumerable<List<T>> GetCombinations<T>(this IEnumerable<T> enumerable)
         {
+            var index = 0;
+
+            HashSet<T> checkedEntries = new HashSet<T>();
+
             foreach (var entry in enumerable)
             {
-                var remaining = enumerable.Where(c => !c!.Equals(entry));
+                if(checkedEntries.Contains(entry))
+                {
+                    continue;
+                }
+                checkedEntries.Add(entry);
+
+                var remaining = enumerable.Where((_, i) => i != index);
                 if (!remaining.Any())
                 {
                     yield return new List<T> { entry };
@@ -21,6 +31,7 @@
                         yield return t;
                     }
                 }
+                index++;
             }
         }
     }
