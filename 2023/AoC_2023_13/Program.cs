@@ -108,5 +108,5 @@ foreach (var map in _maps)
     }
 }
 
-Console.WriteLine(sumLevel1);
-Console.WriteLine(sumLevel2);
+Console.WriteLine("Level1: " + sumLevel1);
+Console.WriteLine("Level2: " + sumLevel2);
