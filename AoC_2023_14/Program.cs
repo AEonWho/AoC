@@ -17,7 +17,7 @@ Dictionary<MapCoordinate, char> map = new();
         }
         maxY++;
     }
-    Tilt("S", d => d.South);
+    Tilt("S", d => d.South());
     var sum = map.ToList().Where(d => d.Value == 'O').Sum(d => maxY - d.Key.Y);
 
     Console.WriteLine("Level1: " + sum);
@@ -30,31 +30,27 @@ Dictionary<MapCoordinate, char> map = new();
         {
             if (i != 0)
             {
-                Tilt("S", d => d.South);
+                Tilt("S", d => d.South());
             }
-            Tilt("W", d => d.West);
-            Tilt("N", d => d.North);
-            Tilt("E", d => d.East);
+            Tilt("W", d => d.West());
+            Tilt("N", d => d.North());
+            Tilt("E", d => d.East());
             patternStartIdx = CheckPattern();
             patternIdx = i;
         }
         else
         {
-            patternIdx++;
-            if (patternIdx >= pattern.Count)
-            {
-                patternIdx = patternStartIdx;
-            }
+            break;
         }
     }
 
-    Console.WriteLine(patternIdx);
+    var resultIdx = ((1000000000 - patternStartIdx - 1) % (pattern.Count - patternStartIdx)) + patternStartIdx;
 
     for (int y = 0; y < maxY; y++)
     {
         for (int x = 0; x < maxY; x++)
         {
-            map[(x, y)] = pattern[patternIdx + 1][x + (y * maxY)];
+            map[(x, y)] = pattern[resultIdx][x + (y * maxY)];
         }
     }
 
@@ -86,7 +82,7 @@ void Tilt(string direction, Func<MapCoordinate, MapCoordinate> rollCoordinate)
             if (map[coord] == 'O')
             {
                 var nextCoord = rollCoordinate(coord);
-                while (map.TryGetValue(nextCoord, out var c) && c == '.')
+                while (map.ContainsKey(nextCoord) && map[nextCoord] == '.')
                 {
                     map[coord] = '.';
                     map[nextCoord] = 'O';
