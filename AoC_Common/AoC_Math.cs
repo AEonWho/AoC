@@ -106,7 +106,7 @@ namespace AoC_Common
                 }
             }
 
-            return dict.Select(d => Pow(d.Key, d.Value)).Aggregate((f, s) => f * s);
+            return dict?.Select(d => Pow(d.Key, d.Value)).Aggregate((f, s) => f * s) ?? 1;
         }
 
         public static ulong Pow(ulong b, uint e)

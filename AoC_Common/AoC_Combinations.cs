@@ -10,7 +10,7 @@
 
             foreach (var entry in enumerable)
             {
-                if(checkedEntries.Contains(entry))
+                if (checkedEntries.Contains(entry))
                 {
                     continue;
                 }
