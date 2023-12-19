@@ -16,32 +16,13 @@ public class Instruction
             }
             else
             {
-                Func<XMas, long> accessor = d => throw new NotSupportedException();
-                switch (splitted[0])
-                {
-                    case "x":
-                        accessor = d => d.X;
-                        break;
-                    case "m":
-                        accessor = d => d.M;
-                        break;
-                    case "a":
-                        accessor = d => d.A;
-                        break;
-                    case "s":
-                        accessor = d => d.S;
-                        break;
-                    default:
-                        break;
-                }
-
                 if (instruction.Contains(">"))
                 {
-                    Evaluators.Add(new GreatherEvaluator(splitted[2], accessor, long.Parse(splitted[1])));
+                    Evaluators.Add(new GreatherEvaluator(splitted[2], splitted[0], long.Parse(splitted[1])));
                 }
                 else
                 {
-                    Evaluators.Add(new LesserEvaluator(splitted[2], accessor, long.Parse(splitted[1])));
+                    Evaluators.Add(new LesserEvaluator(splitted[2], splitted[0], long.Parse(splitted[1])));
                 }
             }
         }
