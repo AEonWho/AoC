@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Xml.Serialization;
+using AoC_Common;
 using AoC_Common.PathFinding;
 
 var text = File.ReadAllLines("Input.txt");
@@ -18,16 +19,13 @@ var text = File.ReadAllLines("Input.txt");
 }
 
 {
-    HashSet<MapCoordinate> map = ParseLevel2(text);
+    var map = ParseLevel2(text, out var borderLength);
 
-    var minX = map.Min(d => d.X);
-    var minY = map.Min(d => d.Y);
-    var maxX = map.Max(d => d.X);
-    var maxY = map.Max(d => d.Y);
+    var inner = AoC_Math.Shoelace(map);
 
-    long insideElementCount = CountInside(map, minX, minY, maxX, maxY);
-
-    Console.WriteLine(insideElementCount + map.Count);
+    //shoeLace -> 0,2 2,2 2,0 0,0 -> liefert 4
+    //halben umfang dazunehmen da der schon teilweise inkludiert war, +1
+    Console.WriteLine(inner + (borderLength / 2) + 1);
 }
 static long CountInside(HashSet<MapCoordinate> map, long minX, long minY, long maxX, long maxY)
 {
@@ -114,36 +112,34 @@ HashSet<MapCoordinate> ParseLevel1(string[] text)
     return map;
 }
 
-HashSet<MapCoordinate> ParseLevel2(string[] text)
+List<MapCoordinate> ParseLevel2(string[] text, out long length)
 {
-    HashSet<MapCoordinate> map = new HashSet<MapCoordinate>();
+    List<MapCoordinate> map = new List<MapCoordinate>();
     int y = 0;
     int x = 0;
-
+    length = 0;
     foreach (var line in text)
     {
         var splitted = line.Split([" ", "(", ")"], StringSplitOptions.RemoveEmptyEntries);
         var amount = int.Parse(splitted[2][1..^1], System.Globalization.NumberStyles.HexNumber);
-        
-        for (int d = 0; d < amount; d++)
+
+        length += amount;
+        switch (splitted[2][^1..])
         {
-            switch (splitted[2][^1..])
-            {
-                case "0":
-                    x++;
-                    break;
-                case "2":
-                    x--;
-                    break;
-                case "3":
-                    y--;
-                    break;
-                case "1":
-                    y++;
-                    break;
-            }
-            map.Add((x, y));
+            case "0":
+                x += amount;
+                break;
+            case "2":
+                x -= amount;
+                break;
+            case "3":
+                y -= amount;
+                break;
+            case "1":
+                y += amount;
+                break;
         }
+        map.Add((x, y));
     }
 
     return map;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using AoC_Common.PathFinding;
 
 namespace AoC_Common
 {
@@ -143,6 +144,18 @@ namespace AoC_Common
                 }
             }
             return list.ToArray(); // Als Array zurück geben
+        }
+
+        public static long Shoelace(List<MapCoordinate> map)
+        {
+            var c = map.Count;
+            map = [.. map, map[0]];
+
+            var area = Math.Abs(map.Take(map.Count - 1)
+               .Select((p, i) => (map[i + 1].X - p.X) * (map[i + 1].Y + p.Y))
+               .Sum() / 2);
+
+            return area;
         }
     }
 }
