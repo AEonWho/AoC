@@ -39,7 +39,7 @@
 
         public MapCoordinate North() => new MapCoordinate(X, Y + 1);
 
-        public MapCoordinate NorthWest() => new MapCoordinate(X + 1, Y + 1);
+        public MapCoordinate NorthWest() => new MapCoordinate(X - 1, Y + 1);
 
         public MapCoordinate East() => new MapCoordinate(X + 1, Y);
 
@@ -52,5 +52,30 @@
         public MapCoordinate West() => new MapCoordinate(X - 1, Y);
 
         public MapCoordinate NorthEast() => new MapCoordinate(X + 1, Y + 1);
+
+        public MapCoordinate MoveDirection(MapDirection direction)
+        {
+            switch (direction)
+            {
+                case MapDirection.N:
+                    return North();
+                case MapDirection.NE:
+                    return NorthEast();
+                case MapDirection.E:
+                    return East();
+                case MapDirection.SE:
+                    return SouthEast();
+                case MapDirection.S:
+                    return South();
+                case MapDirection.SW:
+                    return SouthWest();
+                case MapDirection.W:
+                    return West();
+                case MapDirection.NW:
+                    return NorthWest();
+            }
+
+            throw new NotImplementedException();
+        }
     };
 }
