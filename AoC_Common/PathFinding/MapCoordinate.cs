@@ -25,6 +25,14 @@
             yield return West();
         }
 
+        public IEnumerable<(MapCoordinate, MapDirection)> GetNeighborsWithDirection()
+        {
+            yield return (North(), MapDirection.N);
+            yield return (South(), MapDirection.S);
+            yield return (East(), MapDirection.E);
+            yield return (West(), MapDirection.W);
+        }
+
         public IEnumerable<MapCoordinate> GetFullNeighbors()
         {
             yield return North();
